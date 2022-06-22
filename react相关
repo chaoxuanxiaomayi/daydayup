@@ -1,0 +1,42 @@
+
+React中的优先级
+
+事件优先级：按照用户事件的交互紧急程度，划分的优先级
+更新优先级：事件导致React产生的更新对象（update）的优先级（update.lane）
+任务优先级：产生更新对象之后，React去执行一个更新任务，这个任务所持有的优先级
+调度优先级：Scheduler依据React更新任务生成一个调度任务，这个调度任务所持有的优先级
+前三者属于React的优先级机制，第四个属于scheduler的优先级机制
+
+
+1.事件优先级
+
+离散事件（DiscreteEvent）：click、keydown等，这些事件的触发不是连续的，优先级为 0
+用户阻塞事件（UserBlockingEvent）：drag、scroll、mouseover等，特点是连续触发，阻塞渲染，优先级为1
+连续事件（ContinuousEvent）：canplay、error，优先级最高，为2
+
+2. 更新优先级
+
+setState本质上是调用enqueueSetState,生成一个update对象，这时候会计算它的更新优先级，即update.lane
+首先找出Scheduler中记录的优先级schedulerPriority，然后计算更新优先级
+
+3.任务优先级
+
+update会被一个React的更新任务执行
+任务优先级被用来区分多个更新任务的紧急程度
+收敛同等优先级的任务调度
+高优先级任务及时响应
+
+4 调度优先级
+
+一旦任务被调度，那么它就会进入scheduler
+在Scheduler中，这个任务会被包装一下，生成一个属于Scheduler自己的task，这个task持有的优先级就是调度优先级
+
+export const ImmediatePriority: ReactPriorityLevel = 99;
+export const UserBlockingPriority: ReactPriorityLevel = 98;
+export const NormalPriority: ReactPriorityLevel = 97;
+export const LowPriority: ReactPriorityLevel = 96;
+export const IdlePriority: ReactPriorityLevel = 95;
+export const NoPriority: ReactPriorityLevel = 90;
+
+
+
